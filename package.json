@@ -20,8 +20,13 @@
   },
   "homepage": "https://github.com/Chamanhaldar/RSOC-2025#readme",
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
-    "express": "^5.1.0"
+    "env": "^0.0.2",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.1",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
