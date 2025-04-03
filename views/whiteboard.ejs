@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CollabBoard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #6b48ff, #00ddeb);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      gap: 20px;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1400px;
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 25px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: scale(1.015);
+    }
+
+    #canvas {
+      width: 100%;
+      height: 60vh; /* Dynamic height */
+      min-height: 400px;
+      max-height: 80vh;
+      background: #fff;
+      cursor: crosshair;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+      border-radius: 20px 20px 0 0;
+    }
+
+    .toolbar {
+      padding: 15px;
+      background: #1a2a44;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .toolbar button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #2c3e50;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .toolbar button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.5s ease, height 0.5s ease;
+    }
+
+    .toolbar button:hover::after {
+      width: 250px;
+      height: 250px;
+    }
+
+    .toolbar button:hover {
+      background: #00b4d8;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    .toolbar button.active {
+      background: #0077b6;
+      transform: scale(1.05);
+    }
+
+    .toolbar input[type="color"] {
+      width: 50px;
+      height: 50px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 50%;
+      padding: 0;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .toolbar input[type="color"]:hover {
+      transform: scale(1.15);
+    }
+
+    .toolbar input[type="range"] {
+      width: 130px;
+      accent-color: #00b4d8;
+      cursor: pointer;
+    }
+
+    .cursor {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      pointer-events: none;
+      border: 3px solid white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      transition: all 0.1s ease;
+      z-index: 1000;
+    }
+
+    .cursor::after {
+      content: attr(data-user);
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .users-panel {
+      padding: 15px;
+      background: rgba(240, 244, 245, 0.9);
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .user-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 15px;
+      background: white;
+      border-radius: 30px;
+      font-size: 14px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .user-indicator:hover {
+      transform: scale(1.1);
+    }
+
+    .user-color {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    }
+
+    .comment-section {
+      width: 350px;
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 25px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+      max-height: 800px;
+      transition: transform 0.3s ease;
+    }
+
+    .comment-section:hover {
+      transform: scale(1.015);
+    }
+
+    .comments {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: linear-gradient(to bottom, #f9fbfc, #ffffff);
+    }
+
+    .comment {
+      margin: 15px 0;
+      padding: 15px;
+      background: white;
+      border-radius: 12px;
+      font-size: 15px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .comment:hover {
+      transform: translateX(8px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+
+    .comment .user {
+      color: #1a2a44;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .comment-form {
+      padding: 20px;
+      border-top: 1px solid #eee;
+      background: #f9fbfc;
+      border-radius: 0 0 25px 25px;
+    }
+
+    .comment-form input {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      font-size: 15px;
+    }
+
+    .comment-form input:focus {
+      border-color: #00b4d8;
+      box-shadow: 0 0 10px rgba(0, 180, 216, 0.3);
+      outline: none;
+    }
+
+    .comment-form button {
+      width: 100%;
+      padding: 14px;
+      background: #00b4d8;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .comment-form button:hover {
+      background: #0077b6;
+      transform: scale(1.05);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <canvas id="canvas"></canvas>
+    <div class="toolbar">
+      <button id="line" title="Draw a straight line">Line</button>
+      <button id="rect" title="Draw a rectangle">Rectangle</button>
+      <button id="circle" title="Draw a circle">Circle</button>
+      <button id="freehand" class="active" title="Freehand drawing">Freehand</button>
+      <button id="eraser" title="Erase drawings">Eraser</button>
+      <button id="triangle" title="Draw a triangle">Triangle</button>
+      <button id="text" title="Add text">Text</button>
+      <button id="undo" title="Undo last action">Undo</button>
+      <button id="redo" title="Redo last action">Redo</button>
+      <button id="clear" title="Clear all drawings">Clear All</button>
+      <input type="color" id="color" value="#000000" title="Pick a color">
+      <input type="range" id="brushSize" min="1" max="20" value="5" title="Adjust brush size">
+      <button id="share" title="Share this session">Share</button>
+      <button id="fullscreen" title="Toggle fullscreen">Fullscreen</button>
+    </div>
+    <div class="users-panel" id="usersPanel"></div>
+  </div>
+
+  <div class="comment-section">
+    <div class="comments" id="comments"></div>
+    <div class="comment-form">
+      <input type="text" id="commentInput" placeholder="Chat with friends...">
+      <button id="commentSubmit">Send</button>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const tools = document.querySelectorAll(".toolbar button");
+    const usersPanel = document.getElementById("usersPanel");
+    const commentsDiv = document.getElementById("comments");
+    const commentInput = document.getElementById("commentInput");
+    const commentSubmit = document.getElementById("commentSubmit");
+    let currentTool = "freehand";
+    let drawing = false;
+    let startX, startY;
+    let drawings = [];
+    let redoStack = [];
+    const userId = "user_" + Math.random().toString(36).substr(2, 9);
+    const sessionId = "<%= sessionId %>";
+    const localIP = "<%= localIP %>";
+    const cursors = new Map();
+    const users = new Map();
+    let textInput = "";
+    let username = prompt("Enter your name:", "Guest") || "Guest";
+
+    // Set canvas size dynamically
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth - 30; // Account for padding
+      canvas.height = window.innerHeight * 0.6; // 60% of viewport height
+      redrawCanvas();
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    // Tool selection
+    tools.forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (btn.id === "share") {
+          const shareLink = `http://${localIP}:8080/whiteboard?sessionId=${sessionId}`;
+          navigator.clipboard.writeText(shareLink).then(() => {
+            alert(`Session link copied: ${shareLink}\nShare this with others on your Wi-Fi!`);
+          });
+          return;
+        }
+        if (btn.id === "fullscreen") {
+          toggleFullscreen();
+          return;
+        }
+        if (btn.id === "clear") {
+          drawings = [];
+          redoStack = [];
+          socket.emit("clear", { sessionId });
+          redrawCanvas();
+          return;
+        }
+        tools.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentTool = btn.id;
+        canvas.style.cursor = currentTool === "eraser" ? "cell" : "crosshair";
+        btn.style.animation = "pulse 0.5s";
+        setTimeout(() => btn.style.animation = "", 500);
+      });
+    });
+
+    // Canvas drawing events
+    canvas.addEventListener("mousedown", startDrawing);
+    canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mousemove", (e) => {
+      socket.emit("cursorMove", { x: e.offsetX, y: e.offsetY });
+    });
+
+    function startDrawing(e) {
+      drawing = true;
+      startX = e.offsetX;
+      startY = e.offsetY;
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      if (currentTool === "text") {
+        textInput = prompt("Enter text to add:");
+        if (textInput) {
+          drawText(textInput, startX, startY);
+          stopDrawing();
+        }
+      }
+    }
+
+    function draw(e) {
+      if (!drawing) return;
+
+      const color = document.getElementById("color").value;
+      const brushSize = document.getElementById("brushSize").value;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = brushSize;
+      ctx.lineCap = "round";
+
+      const data = {
+        startX, startY,
+        endX: e.offsetX,
+        endY: e.offsetY,
+        text: currentTool === "text" ? textInput : undefined
+      };
+
+      switch (currentTool) {
+        case "freehand":
+          ctx.lineTo(e.offsetX, e.offsetY);
+          ctx.stroke();
+          socket.emit("draw", { userId, sessionId, type: currentTool, data, color, brushSize });
+          break;
+        case "line":
+          redrawCanvas();
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.lineTo(e.offsetX, e.offsetY);
+          ctx.stroke();
+          break;
+        case "rect":
+          redrawCanvas();
+          ctx.strokeRect(startX, startY, e.offsetX - startX, e.offsetY - startY);
+          break;
+        case "circle":
+          redrawCanvas();
+          const radius = Math.sqrt(Math.pow(e.offsetX - startX, 2) + Math.pow(e.offsetY - startY, 2));
+          ctx.beginPath();
+          ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
+          ctx.stroke();
+          break;
+        case "triangle":
+          redrawCanvas();
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.lineTo(e.offsetX, e.offsetY);
+          ctx.lineTo(startX - (e.offsetX - startX), e.offsetY);
+          ctx.closePath();
+          ctx.stroke();
+          break;
+        case "eraser":
+          ctx.clearRect(e.offsetX - brushSize/2, e.offsetY - brushSize/2, brushSize, brushSize);
+          socket.emit("draw", { userId, sessionId, type: "eraser", data: { x: e.offsetX, y: e.offsetY }, color, brushSize });
+          break;
+      }
+    }
+
+    function stopDrawing(e) {
+      if (!drawing) return;
+      drawing = false;
+      const color = document.getElementById("color").value;
+      const brushSize = document.getElementById("brushSize").value;
+      const endX = e ? e.offsetX : startX;
+      const endY = e ? e.offsetY : startY;
+      const data = { startX, startY, endX, endY, text: currentTool === "text" ? textInput : undefined };
+
+      if (currentTool !== "freehand" && currentTool !== "eraser" && currentTool !== "text") {
+        socket.emit("draw", { userId, sessionId, type: currentTool, data, color, brushSize });
+      }
+      ctx.closePath();
+    }
+
+    function drawText(text, x, y) {
+      const color = document.getElementById("color").value;
+      const brushSize = document.getElementById("brushSize").value;
+      ctx.font = `${brushSize * 2}px Poppins`;
+      ctx.fillStyle = color;
+      ctx.fillText(text, x, y);
+      socket.emit("draw", { userId, sessionId, type: "text", data: { startX: x, startY: y, text }, color, brushSize });
+    }
+
+    // Comment handling
+    commentSubmit.addEventListener("click", () => {
+      const text = commentInput.value.trim();
+      if (text) {
+        socket.emit("comment", { text });
+        commentInput.value = "";
+        commentSubmit.style.animation = "pulse 0.5s";
+        setTimeout(() => commentSubmit.style.animation = "", 500);
+      }
+    });
+
+    commentInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") commentSubmit.click();
+    });
+
+    // Socket events
+    socket.emit("joinSession", { sessionId, userId, username });
+
+    socket.on("loadDrawings", (loadedDrawings) => {
+      drawings = loadedDrawings;
+      redrawCanvas();
+    });
+
+    socket.on("loadComments", (comments) => {
+      comments.forEach(addComment);
+    });
+
+    socket.on("draw", (drawing) => {
+      drawings.push(drawing);
+      redrawCanvas();
+    });
+
+    socket.on("removeDrawing", (drawingId) => {
+      drawings = drawings.filter(d => d._id !== drawingId);
+      redrawCanvas();
+    });
+
+    socket.on("clear", () => {
+      drawings = [];
+      redoStack = [];
+      redrawCanvas();
+    });
+
+    socket.on("cursorMove", ({ userId, position, color }) => {
+      let cursor = cursors.get(userId);
+      if (!cursor) {
+        cursor = document.createElement("div");
+        cursor.className = "cursor";
+        document.body.appendChild(cursor);
+        cursors.set(userId, cursor);
+      }
+      cursor.dataset.user = users.get(userId) || "Unknown";
+      cursor.style.backgroundColor = color;
+      cursor.style.left = (canvas.offsetLeft + position.x) + "px";
+      cursor.style.top = (canvas.offsetTop + position.y) + "px";
+    });
+
+    socket.on("userJoined", ({ userId, color, username }) => {
+      users.set(userId, username);
+      cursors.get(userId)?.setAttribute("data-user", username);
+      updateUsersPanel();
+    });
+
+    socket.on("userLeft", (userId) => {
+      const cursor = cursors.get(userId);
+      if (cursor) {
+        cursor.remove();
+        cursors.delete(userId);
+      }
+      users.delete(userId);
+      updateUsersPanel();
+    });
+
+    socket.on("newComment", addComment);
+
+    // Undo/Redo
+    document.getElementById("undo").addEventListener("click", () => {
+      if (drawings.length > 0) {
+        const lastDrawing = drawings.pop();
+        redoStack.push(lastDrawing);
+        socket.emit("undo");
+        redrawCanvas();
+      }
+      const btn = document.getElementById("undo");
+      btn.style.animation = "pulse 0.5s";
+      setTimeout(() => btn.style.animation = "", 500);
+    });
+
+    document.getElementById("redo").addEventListener("click", () => {
+      if (redoStack.length > 0) {
+        const drawing = redoStack.pop();
+        drawings.push(drawing);
+        socket.emit("draw", drawing);
+        redrawCanvas();
+      }
+      const btn = document.getElementById("redo");
+      btn.style.animation = "pulse 0.5s";
+      setTimeout(() => btn.style.animation = "", 500);
+    });
+
+    // Fullscreen toggle
+    function toggleFullscreen() {
+      const elem = document.documentElement;
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(err => console.error("Fullscreen error:", err));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    function redrawCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawings.forEach(d => {
+        ctx.strokeStyle = d.color;
+        ctx.lineWidth = d.brushSize;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        switch (d.type) {
+          case "freehand":
+            ctx.moveTo(d.data.startX, d.data.startY);
+            ctx.lineTo(d.data.endX, d.data.endY);
+            ctx.stroke();
+            break;
+          case "line":
+            ctx.moveTo(d.data.startX, d.data.startY);
+            ctx.lineTo(d.data.endX, d.data.endY);
+            ctx.stroke();
+            break;
+          case "rect":
+            ctx.strokeRect(d.data.startX, d.data.startY, 
+              d.data.endX - d.data.startX, d.data.endY - d.data.startY);
+            break;
+          case "circle":
+            const radius = Math.sqrt(Math.pow(d.data.endX - d.data.startX, 2) + 
+              Math.pow(d.data.endY - d.data.startY, 2));
+            ctx.arc(d.data.startX, d.data.startY, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+            break;
+          case "triangle":
+            ctx.moveTo(d.data.startX, d.data.startY);
+            ctx.lineTo(d.data.endX, d.data.endY);
+            ctx.lineTo(d.data.startX - (d.data.endX - d.data.startX), d.data.endY);
+            ctx.closePath();
+            ctx.stroke();
+            break;
+          case "text":
+            ctx.font = `${d.brushSize * 2}px Poppins`;
+            ctx.fillStyle = d.color;
+            ctx.fillText(d.data.text, d.data.startX, d.data.startY);
+            break;
+          case "eraser":
+            ctx.clearRect(d.data.x - d.brushSize/2, d.data.y - d.brushSize/2, d.brushSize, d.brushSize);
+            break;
+        }
+      });
+    }
+
+    function updateUsersPanel() {
+      usersPanel.innerHTML = "";
+      users.forEach((username, id) => {
+        const div = document.createElement("div");
+        div.className = "user-indicator";
+        div.innerHTML = `<span class="user-color" style="background: ${generateUserColor(id)}"></span>${username}`;
+        usersPanel.appendChild(div);
+      });
+    }
+
+    function addComment(comment) {
+      const div = document.createElement("div");
+      div.className = "comment";
+      div.innerHTML = `<span class="user">${users.get(comment.userId) || "Unknown"}</span>${comment.text}`;
+      commentsDiv.appendChild(div);
+      commentsDiv.scrollTop = commentsDiv.scrollHeight;
+      div.style.animation = "fadeIn 0.3s";
+    }
+
+    function generateUserColor(userId) {
+      const hash = userId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      return `hsl(${hash % 360}, 70%, 50%)`;
+    }
+  </script>
+</body>
+</html>

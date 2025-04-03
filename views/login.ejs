@@ -1,55 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <title>Login Page | inkSync</title>
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <title>CollabBoard - Welcome</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
 
-  <body>
-    <section>
-      <div class="login-modal">
-        <div class="login-form">
-          <div class="login-content">
-            <h1 class="title">Welcome back</h1>
-            <h3 class="subtitle">Welcome back! Please enter your details.</h3>
-            <div class="email-input">
-              <span class="input-title">Email</span>
-              <input
-                class="input"
-                type="email"
-                placeholder="Enter your email"
-              />
-            </div>
-            <div class="password-input">
-              <span class="input-title">Password</span>
-              <input class="input" type="password" placeholder="********" />
-            </div>
-            <div class="recovery">
-              <div class="remember">
-                <input type="checkbox" id="check" />
-                <label for="check">Remember me</label>
-              </div>
-              <div class="forgot"><a href="/forgot-password.html">Forgot password</a></div>
-            </div>
-            <button class="btn btn-primary">Sign in</button>
-            <div class="login-footer">
-              Don’t have an account?<a href="/signup.html">Create a Account!</a>
-            </div>
-          </div>
-        </div>
-        <div class="login-image">
-          <img src="nike.png"/>
-        </div>
-      </div>
-    </section>
-  </body>
+    body {
+      background: linear-gradient(135deg, #6b48ff, #00ddeb);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.97);
+      padding: 50px;
+      border-radius: 25px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+      width: 100%;
+      max-width: 600px;
+      animation: slideUp 0.6s ease;
+    }
+
+    h1 {
+      color: #1a2a44;
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 36px;
+      font-weight: 700;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #1a2a44;
+      margin: 25px 0 15px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .session-list {
+      margin-bottom: 40px;
+    }
+
+    .session-list a {
+      display: block;
+      padding: 15px 25px;
+      background: #f0f4f5;
+      color: #1a2a44;
+      text-decoration: none;
+      border-radius: 12px;
+      margin: 8px 0;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .session-list a:hover {
+      background: #00b4d8;
+      color: white;
+      transform: translateX(8px);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    label {
+      color: #1a2a44;
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    input[type="text"] {
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: #00b4d8;
+      box-shadow: 0 0 10px rgba(0, 180, 216, 0.3);
+      outline: none;
+    }
+
+    button {
+      padding: 15px;
+      background: #00b4d8;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #0077b6;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    .ip-info {
+      text-align: center;
+      color: #666;
+      font-size: 15px;
+      margin-top: 25px;
+      font-weight: 500;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>InkSync</h1>
+    
+    <h2>Join a Session</h2>
+    <div class="session-list">
+      <% sessions.forEach(session => { %>
+        <a href="/whiteboard?sessionId=<%= session._id %>"><%= session.title %></a>
+      <% }); %>
+    </div>
+
+    <h2>Create New Session</h2>
+    <form action="/create-session" method="post">
+      <label for="title">Session Title:</label>
+      <input type="text" id="title" name="title" placeholder="Enter session name" required>
+      <button type="submit">Create Session</button>
+    </form>
+    <div class="ip-info">Your local IP: <%= localIP %>:8080</div>
+  </div>
+</body>
 </html>

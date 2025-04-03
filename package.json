@@ -23,7 +23,9 @@
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
-    "mongoose": "^8.13.1"
+    "mongoose": "^8.13.1",
+    "os": "^0.1.2",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
