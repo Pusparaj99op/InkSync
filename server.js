@@ -18,9 +18,9 @@ app.get('/', (req,res)=>{
     res.render("login.ejs");
 });
 
-app.post('/',(req,res)=>{
+// app.post('/',(req,res)=>{
     
-})
+// })
 
 
 app.listen(8080,()=>{
