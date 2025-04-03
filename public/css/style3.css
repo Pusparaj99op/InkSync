@@ -1,0 +1,34 @@
+.select {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 300px;
+    gap: 1px;
+}
+
+.select__item {
+    padding: 10px;
+    cursor: pointer;
+    font-family: "Heebo", sans-serif;
+    text-align: center;
+    border-radius: 3px;
+    background: #eeeeee;
+    transition: background 0.1s;
+}
+
+.select__item--selected {
+    background: #009578;
+    color: #ffffff;
+}
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically */
+    height: 100vh; /* Full viewport height */
+    text-align: center; /* Center text */
+}
+
+.section2{
+  border: 2px solid grey;
+}
