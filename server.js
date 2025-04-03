@@ -18,6 +18,10 @@ app.get('/', (req,res)=>{
     res.render("login.ejs");
 });
 
+app.post('/',(req,res)=>{
+    
+})
+
 
 app.listen(8080,()=>{
     console.log("server is running on port 8080");
