@@ -1,0 +1,28 @@
+{
+  "name": "rsoc-2025",
+  "version": "1.0.0",
+  "description": "hi everyone \r helo soham",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chamanhaldar/RSOC-2025.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Chamanhaldar/RSOC-2025/issues"
+  },
+  "homepage": "https://github.com/Chamanhaldar/RSOC-2025#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
