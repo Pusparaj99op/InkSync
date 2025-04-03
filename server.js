@@ -1,6 +1,10 @@
 const express = require("express");
 const app = express()
+const path = require("path");
 const dotenv = require('dotenv');
+app.use(express.static(path.join(__dirname,"views"))); 
+app.use(express.static(path.join(__dirname,"public")));
+
 dotenv.config();
 const connectToDB = require('./config/db')
 connectToDB();
@@ -11,8 +15,8 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 
 
 app.get('/', (req,res)=>{
-    res.send('Hello');
-})
+    res.render("login.ejs");
+});
 
 
 app.listen(8080,()=>{
