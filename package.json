@@ -9,21 +9,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Chamanhaldar/RSOC-2025.git"
+    "url": "git+https://github.com/Chamanhaldar/InkSync.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/Chamanhaldar/RSOC-2025/issues"
+    "url": "https://github.com/Chamanhaldar/InkSync/issues"
   },
-  "homepage": "https://github.com/Chamanhaldar/RSOC-2025#readme",
+  "homepage": "https://github.com/Chamanhaldar/InkSync#readme",
   "dependencies": {
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
-    "mongoose": "^8.13.1",
+    "mongoose": "^8.13.2",
     "os": "^0.1.2",
     "socket.io": "^4.8.1"
   },
