@@ -28,7 +28,4 @@ InkSync is a real-time collaborative whiteboard application where users can regi
 | **JWT** | Authentication |
 | **Bcrypt.js** | Password hashing |
 
----
-
-## 📂 Folder Structure  
 
